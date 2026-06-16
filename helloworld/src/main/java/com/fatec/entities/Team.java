@@ -15,13 +15,22 @@ public class Team implements java.io.Serializable {
     private Long id;
     private String name;
     private String country;
-    private String matchDay;
     private Integer wins;
     private Integer losses;
     private Integer draws;
     private Integer cupPoints;
 
     public Team() {
+    }
+
+    public Team(Long id, String name, String country, Integer wins, Integer losses, Integer draws, Integer cupPoints) {
+        this.id = id;
+        this.name = name;
+        this.country = country;
+        this.wins = wins;
+        this.losses = losses;
+        this.draws = draws;
+        this.cupPoints = cupPoints;
     }
 
     public Long getId() {
@@ -46,14 +55,6 @@ public class Team implements java.io.Serializable {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public String getMatchDay() {
-        return matchDay;
-    }
-
-    public void setMatchDay(String matchDay) {
-        this.matchDay = matchDay;
     }
 
     public Integer getWins() {

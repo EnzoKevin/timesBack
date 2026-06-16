@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fatec.dtos.TicketDTO;
 import com.fatec.dtos.TicketRequest;
@@ -26,7 +28,7 @@ public class TicketService {
         return tickets.stream()
                 .filter(ticket -> ticket.id().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
     }
 
     public TicketDTO save(TicketRequest request) {

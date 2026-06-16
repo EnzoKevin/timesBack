@@ -10,7 +10,6 @@ public class TeamMapper {
         Team team = new Team();
         team.setName(request.name());
         team.setCountry(request.country());
-        team.setMatchDay(request.matchDay());
         team.setWins(request.wins());
         team.setLosses(request.losses());
         team.setDraws(request.draws());
@@ -23,7 +22,6 @@ public class TeamMapper {
                 team.getId(),
                 team.getName(),
                 team.getCountry(),
-                team.getMatchDay(),
                 team.getWins(),
                 team.getLosses(),
                 team.getDraws(),

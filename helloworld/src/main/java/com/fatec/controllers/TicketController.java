@@ -1,49 +1,41 @@
 package com.fatec.controllers;
 
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.fatec.dtos.TicketDTO;
 import com.fatec.dtos.TicketRequest;
 import com.fatec.services.TicketService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
-@CrossOrigin
+@CrossOrigin("*")
 public class TicketController {
 
-    @Autowired
-    private TicketService service;
+    private final TicketService service;
+
+    public TicketController(TicketService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public ResponseEntity<List<TicketDTO>> findAll() {
+    public ResponseEntity<List<TicketDTO>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<TicketDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> create(@Valid @RequestBody TicketRequest request) {
-        TicketDTO ticket = service.save(request);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(ticket.id())
-                .toUri();
-        return ResponseEntity.created(location).body(ticket);
+    public ResponseEntity<TicketDTO> create(@RequestBody TicketRequest request) {
+        return ResponseEntity.status(201).body(service.save(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TicketDTO> update(@PathVariable Long id, @Valid @RequestBody TicketRequest request) {
+    public ResponseEntity<TicketDTO> update(@PathVariable Long id, @RequestBody TicketRequest request) {
         return ResponseEntity.ok(service.update(id, request));
     }
 

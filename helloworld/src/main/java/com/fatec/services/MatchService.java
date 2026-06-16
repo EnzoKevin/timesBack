@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fatec.dtos.MatchDTO;
 import com.fatec.dtos.MatchRequest;
@@ -29,7 +31,7 @@ public class MatchService {
         return matches.stream()
                 .filter(match -> match.id().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Match not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found"));
     }
 
     public MatchDTO save(MatchRequest request) {

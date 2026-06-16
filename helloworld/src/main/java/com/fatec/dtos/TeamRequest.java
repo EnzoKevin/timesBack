@@ -11,8 +11,6 @@ public record TeamRequest(
         @Size(min = 3, max = 100, message = "O nome da equipe deve ter entre 3 e 100 caracteres") String name,
         @NotBlank(message = "O país não pode ser em branco")
         @Size(min = 3, max = 100, message = "O país deve ter entre 3 e 100 caracteres") String country,
-        @NotBlank(message = "O dia da partida não pode ser em branco")
-        @Size(min = 3, max = 50, message = "O dia da partida deve ter entre 3 e 50 caracteres") String matchDay,
         @NotNull(message = "O número de vitórias não pode ser nulo")
         @PositiveOrZero(message = "O número de vitórias não pode ser negativo")
         @Max(value = 100, message = "O número de vitórias não pode ser maior que 100") Integer wins,

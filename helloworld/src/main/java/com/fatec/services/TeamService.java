@@ -1,68 +1,67 @@
 package com.fatec.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fatec.dtos.TeamDTO;
 import com.fatec.dtos.TeamRequest;
+import com.fatec.entities.Team;
+import com.fatec.repositories.TeamRepository;
 
 @Service
 public class TeamService {
 
-    private final AtomicLong nextId = new AtomicLong(9);
-    private final List<TeamDTO> teams = new ArrayList<>(List.of(
-            new TeamDTO(6L, "asdas", "Angola", "2026-06-11", 10, 10, 5, 35),
-            new TeamDTO(7L, "Fatec Stars", "Armenia", "2026-06-17", 10, 15, 5, 35),
-            new TeamDTO(8L, "trelo", "Albania", "2026-06-16", 1, 3, 4, 7)
-    ));
+    private final TeamRepository repository;
+
+    public TeamService(TeamRepository repository) {
+        this.repository = repository;
+    }
 
     public List<TeamDTO> findAll() {
-        return new ArrayList<>(teams);
+        return repository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     public TeamDTO findById(Long id) {
-        return teams.stream()
-                .filter(team -> team.id().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+        return repository.findById(id)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found"));
     }
 
     public TeamDTO save(TeamRequest request) {
-        TeamDTO team = new TeamDTO(
-                nextId.getAndIncrement(),
-                request.name(),
-                request.country(),
-                request.matchDay(),
-                request.wins(),
-                request.losses(),
-                request.draws(),
-                request.cupPoints());
-        teams.add(team);
-        return team;
+        Team team = new Team(null, request.name(), request.country(), 
+                             request.wins(), request.losses(), request.draws(), request.cupPoints());
+        return mapToDTO(repository.save(team));
     }
 
     public TeamDTO update(Long id, TeamRequest request) {
-        TeamDTO existing = findById(id);
-        TeamDTO updated = new TeamDTO(
-                existing.id(),
-                request.name(),
-                request.country(),
-                request.matchDay(),
-                request.wins(),
-                request.losses(),
-                request.draws(),
-                request.cupPoints());
-        teams.remove(existing);
-        teams.add(updated);
-        return updated;
+        Team team = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found"));
+        
+        team.setName(request.name());
+        team.setCountry(request.country());
+        team.setWins(request.wins());
+        team.setLosses(request.losses());
+        team.setDraws(request.draws());
+        team.setCupPoints(request.cupPoints());
+        
+        return mapToDTO(repository.save(team));
     }
 
     public void deleteById(Long id) {
-        TeamDTO existing = findById(id);
-        teams.remove(existing);
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found");
+        }
+        repository.deleteById(id);
+    }
+
+    private TeamDTO mapToDTO(Team team) {
+        return new TeamDTO(team.getId(), team.getName(), team.getCountry(),
+                           team.getWins(), team.getLosses(), team.getDraws(), team.getCupPoints());
     }
 }
